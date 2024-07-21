@@ -135,5 +135,89 @@ Flow of Operations
     If the deletion is successful (response.ok), showProduct is set to false, removing the product from the UI, 
     and show is set to false, hiding the dialog.
     If the deletion fails, an error message is set in message.
+*******************
+Innen jön a ProductsP-ről 
+ProductC meg a product komponens 
+->
+    {
+        products.map((p, i) =>
+            <ProductC key={i} p={p} />
+        )
+    }
+És azért csináltunk külön komponens-t, hogy majd legyen ott egy delete product-unk!!!!! 
+meghogy megjelenítsük itt a dolgokat
+
+Akkor itt ugye megkapja a p nevű prop-ot, ami ProductsP-ből jön és a termék adat, mert ott leszedjük a termék adatokat, ami ott fent van a 
+products-on végigmegyünk egy map-val és ami onnan jön p azt megkapja ez a function egy prop-ban és kiírjuk
+Közben meg definiálunk egy deleteProduct-ot, az meg úgy müködik, hogy megszólitjuk a megfelelő endpoint-ot 
+-> 
+("https://dummyjson.com/products/" + p.id,..
+a metódust DELETE-re állítjuk, mert ha POST lenne, akkor megpróbálna felvinni egy terméket (CreateProductsForm)-nál azért néztük meg, hogy van 
+-e id, mert a POST-nál nem kell, ott majd automatikusan kap egy id-t, a PUT-val meg megpróbálunk felülírni egy terméket és ott viszont kell egy 
+id, mert tudnunk kell, hogy melyik (id-ú) létező terméket akarjuk majd felülírni!!!! 
+
+és ha minden rendben van, akkor a setAShowProduct meg a setShow 
+if(response.ok) {
+    setShow(false);
+    SetShowProduct(false);
+
+A setShowProduct az eltünteti nekünk a terméket, a setShow meg a MessageBox-hoz tartozik 
+és akkor itt eltüntetjük, mert a message az az, hogy biztosan le akarjuk törölni a következő terméket: ${p.title} 
+const [message, setMessage] = 
+useState(`Biztosan le akarod törölni a következő terméket: ${p.title}`);
+és ha ott rányumtunk arra hogy törlés a MessageBox-nál, akkor eltünteti a MessageBox-ot meg magát a terméket is!!!!! 
+
+Mert valójában nem tünik el az adatbázisukból, csak mi imitáljuk ezt, hogy ez így müködik 
+Való életben letörli az adatbázisból és a következő frissítésre nem tud megjelenni, mert nem létezik az a termék többet az adatbázisukban!!! 
+vagy azért nem jelenik meg, mert nem törli hanem csak arhiválja, sok rendszer müködik úgy, hogy van egy olyan mező az adatbázisukban, hogy 
+arhivált és elöször nem törli le, csak 30 napig arhivált státuszban lesz és egy automatizmus letörli azokat az arhivált bármiket, mondjuk 
+terméket, amelyek régebbiek, mint 30 nap, tehát vagy arhiválja vagy törli vagy létezhet külön arhiválás és törlés funkció 
+
+const buttons = [
+    {   
+        cb:()=>setShow(false),
+        text: "Mégsem",
+        icon: "fa-solid fa-circle-chevron-left"
+    }, 
+        {   
+        cb: deleteProduct,
+        text: "Törlés",
+        icon: "fa-solid fa-trash-can"
+    }
+]
+
+Ez a MessageBox-hoz tartozik, tehát a MessageBox-nál kapunk 4 darab prop-ot { messages, buttons, show, setShow} 
+1. 
+messages arra szolgál, hogy azokat a message-eket megjenítsük ebben a message box-ban, amit szeretnénk, ezt kivülről fogja megkapni
+2. 
+buttons az azért érdekes, mert ehhez meghatároztuk egy adatszerkezetet 
+a cb (callback function), tehát mit hívjon meg abban az esetben, hogyha megnyomjuk az adott gombot
+text, hogy mi legyen a gombnak a felírata 
+icon, mi legyen az ikon-ja fontAwesome
+
+ezt pedig majd a MessageBox-on így kapja meg majd a két button!!!
+{
+    buttons.map((b, i) => 
+        <button key={i} 
+        onClick={b.cb}>
+            {b.text}
+
+            <FontAwesome icon={b.icon}/>
+        </button>    
+    )
+}
+Tehát végigmegyünk a buttons-ön és a onClick lesz a cb, a text lesz ami ki van írva, az ikon meg a text mellett lesz megjelenítve 
+1. onClick={b.cb}>
+2. {b.text}
+3. <FontAwesome icon={b.icon}/>
+
+de viszont a text meg az ikon túlságosan egymás mellett van, ezért csinálunk egy margin-left-es class-t 
+.margin-left-5px {
+    margin-left: 5px;
+}
+
+és ezt megadjuk a fontAwesome-os ikonnak!!! 
+->
+<FontAwesome className="margin-left-5px" icon={b.icon}/>
 */
 }

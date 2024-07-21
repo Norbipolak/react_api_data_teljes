@@ -41,4 +41,6 @@ a termékfelvételnél meg csak az add-ot kell megszólítani!!!!!!
 4. contact 
 
 fontos dinamikusan változó id (:) -> <Route path="/update-product/:id"
+***********
+
 */ 

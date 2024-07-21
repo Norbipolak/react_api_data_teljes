@@ -62,7 +62,7 @@ import GetUrlVariable from "../functions/GetUrlVariable";
 function ProductsP() {
     const [products, setProducts] = useState([]);
     //ide mentjük le az összes terméket, ami majd lejön! 
-    const [limit, setLimit] = useState(parseInt("limit", 16));
+    const [limit, setLimit] = useState(parseInt(GetUrlVariable("limit", 16)));
     //hogy alapból is lejöjjön valamennyi termék azért kell a 16, amugy meg a limit, hogy mennyi termék legyen egy oldalon 
     const [page, setPage] = useState(1);
     //oldal ennek az értékét fogjuk változtatni a pagination függvénnyel, meg az url-ben is benne lesz 
@@ -293,5 +293,108 @@ Explanation
 
 6. Search Input:
     Allows users to search products, updating the q state.
+
+
+itt search params-okat url változokat adunk meg, hozzá a navigate-hez, hogy page, limit és q 
+navigate(`/?page=${page}&limit=${limit}&q=${q}`);
+page -> hányadik oldalon vagyunk 
+limit -> hány terméket jelenítünk meg egy oldalon 
+q -> keresési feltétel 
+    van itt egy input, keresési mező és onnan kap értéket a q 
+
+és ha beírjuk ide a mirror-t, akkor ez lesz az url 
+->
+localhost:3000/?page=1&limit=16&q=mirror
+ilyenkor kihoz két terméket, aminek a nevében benne van, hogy mirror 
+
+Arra használtuk ezt a dolgot, hogy módosítsa az url-ünket méghozzá úgy, hogy hozzáadja ezeket az url változókat 
+Ezek, azért szükségesek, mert pl. a GetUrlVariable-vel leszedjük a limit-et, a 16 a default érték 
+const [limit, setLimit] = useState(parseInt(GetUrlVariable("limit", 16)));
+->
+function GetUrlVariable(name, defValue) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name) !== null ? params.get(name) : defValue;
+}
+Az url változót fogjuk leszedni ezzel a limit-et 
+és ha ezt átálítjuk, mert van egy ilyen select-option-ös valamink 
+    <select onChange={(e) => parseInt(e.target.value)} value={limit}>
+        <option value={16}>16</option>
+        <option value={24}>24</option>
+        <option value={32}>32</option>
+    </select>
+Az oldalon ezt átállítjuk és rányomunk a keresés gomb-ra akkor az lesz az url-ben, hogy 
+localhost:3000/?page=1&limit=24&q=
+így most már 24 termék jelenik meg!!!! 
+
+És a backend-en is be van állítva, mert a backend a keresési paramétereken keresztül adja meg a dolgokat 
+Ennek két része van
+1. a saját weboldalunkon beállitjuk, a kliens oldalon ezeket a keresési paramétereket 
+2. hogy a dummyjson url-je megkapja ugyanezeket vagy nagyon hasonlóakat 
+const response = await fetch(`https://dummyjson.com/products/search?limit=${limit}&skip=${skip}&q=${q}`);
+*************
+ProductsP az amelyik megjelenik a főoldalon 
+Itt megjelennek a termékek és itt van nekünk a products useState-s változó, ami egy tömb 
+A limit (hány jelenik meg egy oldalon), page (hányadik oldalon vagyunk), total (összesen hány oldal van) ->
+ezt megkapjuk onnan, hogy az összes termék amit lehozunk, tehát json.total és ezt elosztjkuk a limit-vel, amit majd Math.ceil-ezünk 
+és ezzel fontos lesz a kiírásnál, mert innen tudja majd a felhasználó, hogy hány oldal van összesen és ha a page-t is megadjuk, akkor meg, hogy 
+hol tart - hány oldalból -> span>Page {page} of {total}</span>
+q (keresési paraméter)
+
+backend-en nem page van, ahogy nálunk 
+-> 
+backend -> const response = await fetch(`https://dummyjson.com/products/search?limit=${limit}&skip=${skip}&q=${q}`);
+nálunk -> navigate(`/?page=${page}&limit=${limit}&q=${q}`);
+
+ezért kell nekünk a page-hez a skip-et létrehozni -> const skip = (page - 1) * limit
+mennyit hagyjunk ki -> van egy page-ünk, akkor az ügy müködik, hogyha az első oldalon vagyunk, hogy skip az nulla lesz, nem hagyunk ki semennyit
+ha a második-on 1 * limit-et, mondjuk, hogyha 30-ként lépegetünk, akkor 30-at kell kihagyni és a 31-től fog kezdődni 
+const skip = (page - 1) / limit;
+
+itt összefüzzük a keresési feltételeket meg a változókat 
+->
+const response = await fetch(`https://dummyjson.com/products/search?limit=${limit}&skip=${skip}&q=${q}`);
+
+navigate(`/?page=${page}&limit=${limit}&q=${q}`);
+itt pedig azt csináljuk, hogy navigálunk, hogy a saját rendszerünk tudja, hogy hol tartunk, azért mertha újratöltjük az oldalt 
+egy f5-vel akkor ezek useState-s változók, hogy limit, page, total, q 
+ezek lenullázódnak, mert újratöltödött az oldal, mert így müködik egy böngésző meg egy JavaScript kód!!!! 
+De viszont ha ezek megmaradnak egy url változóban, akkor az url változó értékéből fel tudjuk tölteni ezeket!!!!!!! 
+****
+a pagination meg úgy müködik, hogy egy feltétel-t határoztunk meg 
+dNext ha az addition === 1 akkor van next és ha a page nagyobb vagy egyenlő, mint total, akkor nem megyünk tovább!!!
+const dNext = addition === 1 && page >= total;
+
+és a dPrev meg amikor kivónás van addition === -1 és nem lehet kisebb vagy egyenlő, mint egy 
+const dPrev = addition === -1 && page <= 1
+
+    const pagination = (addition) => {
+        const dNext = addition === 1 && page >= total;
+        const dPrev = addition === -1 && page <= 1;
+
+        if (!dNext && !dPrev)
+            setPage(p => p + addition);
+*****
+van két useEffect, az egyik a page-nek a változására reagál, tehát a page-nek a módosulására reagál 
+mert, hogyha a page megváltozik, akkor a skip is megváltozik!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const response = await fetch(`https://dummyjson.com/products/search?limit=${limit}&skip=${skip}&q=${q}`);
+és akkor újra le kell szedni a termékeket csak egy másik skip értékkel!!!!!! 
+
+    useEffect(() => {
+        getProducts();
+    }, []);
+
+    useEffect(() => {
+        getProducts();
+    }, [page]);
+******************************
+ProductC meg a product komponens 
+->
+    {
+        products.map((p, i) =>
+            <ProductC key={i} p={p} />
+        )
+    }
+És azért csináltunk külön komponens-t, hogy majd legyen ott egy delete product-unk!!!!! 
+
 */
 }
