@@ -1,38 +1,197 @@
-.App {
-  text-align: center;
+* {
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+h1, h2, h3, h4, h5, h6 {
+    margin: 10px 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+button, select, input {
+    display: block;
+    margin: 15px auto;
+    padding: 8px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+nav {
+    height: 80px;
+    background-color: #597692;
 }
 
-.App-link {
-  color: #61dafb;
+nav ul {
+    display: flex;
+    justify-content: center;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+nav li {
+    height: 80px;
+    list-style: none;
+    display: flex;
+    align-items: center;
 }
+
+nav li:hover {
+    background-color: #89b2db;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 15px;
+}
+
+.selected-menu {
+    background-color: #7ea9d1;
+}
+
+.container {
+    max-width: 1080px;
+    margin: 15px auto;
+    padding: 15px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 15px;
+}
+
+/*fontos*/
+.product-img {
+    width: 100%;
+    margin: auto;
+}
+/*fontos*/
+.product-img img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.product-data {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 5px;
+}
+
+.white-box {
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.product-page-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 15px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.product-data-box {
+    background-color: #89b2db;
+    border: 1px solid #597692;
+    padding: 15px;
+}
+
+.w-80 {
+    width: 80%;
+}
+
+.error-label {
+    padding: 10px;
+    text-align: center;
+    color: #db3300;
+    font-weight: bold;
+}
+
+.search-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    text-align: center;
+    background-color: #efefef;
+    border: 1px solid #d7d7d7;
+    margin-bottom: 15px;
+}
+
+.pagination {
+    max-width: 500px;
+    display: flex;
+    justify-content: center;
+    margin: 15px auto;
+    align-items: center;
+}
+
+.message-box {
+    max-width: 300px;
+    max-height: 300px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #d7d7d7;
+    position: fixed; /*fontos!!!*/
+    margin: auto;
+    top:0;
+    bottom:0;
+    right:0;
+    left:0;
+    box-shadow: 0px 0px 4px #313131;
+}
+
+.message-box-header {
+    height: 30px;
+    background-color: #597692;
+    color: white;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.message-box-body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    height: 200px;
+    padding: 5px;
+    overflow: auto; /*fontos*/
+}
+
+.message-box-body h4 {
+    margin: 5px 0;
+}
+
+.message-box-buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.delete-trash-can {
+    color: red;
+    cursor: pointer;
+}
+
+::-webkit-scrollbar {
+    width:8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #d7d7d7;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #597692;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #7296b9;
+    border-radius: 8px;
+}
+
